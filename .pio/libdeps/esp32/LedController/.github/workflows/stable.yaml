@@ -1,0 +1,73 @@
+name: "tagged-release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  doxygen:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: install dependencies
+      run: sudo apt install doxygen graphviz
+    - name: generate docs
+      run: doxygen
+    - name: Deploy
+      uses: s0/git-publish-subdir-action@master
+      env:
+        REPO: self
+        BRANCH: gh-pages
+        FOLDER: doc/html
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  tagged-release:
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
+    env:
+      boards: "-b esp32dev -b d1_mini -b uno -b ATmega1280 -b leonardo"
+    steps:
+      - uses: actions/checkout@v1
+      - name: install platform io
+        run: | 
+          pip3 install -U setuptools
+          pip3 install -U wheel
+          pip3 install -U platformio
+          python3 -m platformio update
+
+      - name: build and test Demo Rocket
+        run: |
+          export PLATFORMIO_CI_SRC="examples/LedControllerDemoRocket/LedControllerDemoRocket.ino"
+          python3 -m platformio ci --lib="." ${boards} --keep-build-dir
+
+      - name: build and test Demo Counting
+        run: |
+          export PLATFORMIO_CI_SRC="examples/LedControllerDemoCounting/LedControllerDemoCounting.ino"
+          python3 -m platformio ci --lib="." ${boards} --keep-build-dir
+
+      - name: build and test Demo HwSPI
+        run: |
+          export PLATFORMIO_CI_SRC="examples/LedControllerDemoHwSPI/LedControllerDemoHwSPI.ino"
+          python3 -m platformio ci --lib="." ${boards} --keep-build-dir
+
+      - name: build and test 7-Segment Display
+        run: |
+          export PLATFORMIO_CI_SRC="examples/LCDemo7Segment/LCDemo7Segment.ino"
+          python3 -m platformio ci --lib="." ${boards} --keep-build-dir
+
+      - name: pack repo
+        run: |
+          zip -r release.zip License README.md library.properties keywords.txt .vscode examples
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            License
+            release.zip
+            
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: build-artifact-${{ matrix.os }}-${{ matrix.compiler }}
+          path: .

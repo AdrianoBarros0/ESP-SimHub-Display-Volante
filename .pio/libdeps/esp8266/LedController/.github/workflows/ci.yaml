@@ -1,0 +1,47 @@
+name: "CI"
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  pre-release:
+    name: "Pre Release latest"
+    runs-on: "ubuntu-latest"
+    env:
+      boards: "-b esp32dev -b d1_mini -b uno -b ATmega1280 -b leonardo"
+    steps:
+      - uses: actions/checkout@v1
+      - name: install platform io
+        run: | 
+          pip3 install -U setuptools
+          pip3 install -U wheel
+          pip3 install -U platformio
+          python3 -m platformio update
+          
+      - name: build and test Demo Rocket
+        run: |
+          export PLATFORMIO_CI_SRC="examples/LedControllerDemoRocket/LedControllerDemoRocket.ino"
+          python3 -m platformio ci --lib="." ${boards} --keep-build-dir
+
+      - name: build and test Demo Counting
+        run: |
+          export PLATFORMIO_CI_SRC="examples/LedControllerDemoCounting/LedControllerDemoCounting.ino"
+          python3 -m platformio ci --lib="." ${boards} --keep-build-dir
+
+      - name: build and test Demo HwSPI
+        run: |
+          export PLATFORMIO_CI_SRC="examples/LedControllerDemoHwSPI/LedControllerDemoHwSPI.ino"
+          python3 -m platformio ci --lib="." ${boards} --keep-build-dir
+
+      - name: build and test 7-Segment Display
+        run: |
+          export PLATFORMIO_CI_SRC="examples/LCDemo7Segment/LCDemo7Segment.ino"
+          python3 -m platformio ci --lib="." ${boards} --keep-build-dir
+
+      - uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: build-artifact
+          path: .
