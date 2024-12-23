@@ -1,6 +1,7 @@
 #ifndef __SHCUSTOMPROTOCOL_H__
 #define __SHCUSTOMPROTOCOL_H__
 #define LGFX_USE_V1
+
 #include <LovyanGFX.hpp>
 #include <BleGamepad.h>
 // #include <LGFX_AUTODETECT.hpp>  // クラス"LGFX"を準備します
@@ -12,7 +13,7 @@
 
 TFT_eSPI tft = TFT_eSPI();
 
-const int buttonPins[12] = {4, 16, 17, 5, 18, 19, 27, 26, 25, 33, 32, 35};
+const int buttonPins[14] = {4, 16, 17, 5, 18, 23, 27, 26, 25, 33, 32, 35, 22, 19};
 
 BleGamepad gamepad;
 
@@ -62,6 +63,8 @@ private:
 	String brakeBias = "0";
 	String brake = "0";
 	String lapInvalidated = "False";
+	String drsAvailable = "0";
+	String drsEnabled = "0";
 	
 	
 
@@ -100,9 +103,9 @@ public:
 		gamepad.begin();
 
   		// Configuração dos pinos dos botões como entradas
-  		for (int i = 0; i < 12; i++) {
-    	pinMode(buttonPins[i], INPUT_PULLDOWN); // usa o resistor pull-up interno
-  }
+  		for (int b = 0; b <= 14; b++) {
+    	pinMode(buttonPins[b], INPUT_PULLDOWN); // usa o resistor pull-down interno
+  		}
 	}
 
 	// Called when new data is coming from computer
@@ -132,6 +135,8 @@ public:
 		brakeBias  = FlowSerialReadStringUntil(';');
 		brake  = FlowSerialReadStringUntil(';');
 		lapInvalidated  = FlowSerialReadStringUntil(';');
+		drsAvailable  = FlowSerialReadStringUntil(';');
+		drsEnabled  = FlowSerialReadStringUntil(';');
 
 		const String rest = FlowSerialReadStringUntil('\n');
 	}
@@ -142,6 +147,8 @@ public:
 	{
 		drawRpmMeter(0, 0, SCREEN_WIDTH, HALF_CELL_HIGHT);
 		drawGear(COL[2], COL[1]);
+
+		//drawDRS(SCREEN_WIDTH, 75);
 		
 		// First+Second Column (Lap times)
 		drawCell(COL[0], ROW[1], bestLapTime, "bestLapTime", "Best Lap", "left");
@@ -163,7 +170,7 @@ public:
 		else
 			drawCell(COL[0], ROW[4], tcLevel, "tcLevel", "TC", "center", TFT_YELLOW);
 		drawCell(COL[1], ROW[4], absLevel, "absLevel", "ABS", "center", TFT_BLUE);
-		drawCell(COL[2], ROW[4], brakeBias, "brakeBias", "BB", "center", TFT_MAGENTA);
+		drawCell(COL[2], ROW[4], brakeBias, "brakeBias", "BB", "center", TFT_RED);
 
 		// (tyre pressure)
 		drawCell(COL[3], ROW[3], tyrePressureFrontLeft, "tyrePressureFrontLeft", "FL", "center", TFT_CYAN);
@@ -177,11 +184,11 @@ public:
 
 	void ButtonsBLE(){
 		// Verificando o estado de cada botão
-		for (int i = 0; i < 12; i++) {
-			if (digitalRead(buttonPins[i]) == LOW) { // botão pressionado
-			gamepad.press(i); // pressiona o botão correspondente
+		for (int b = 0; b <= 14; b++) {
+			if (digitalRead(buttonPins[b]) == HIGH) { // botão pressionado
+			gamepad.press(b); // pressiona o botão correspondente
 			} else {
-			gamepad.release(i); // libera o botão correspondente
+			gamepad.release(b); // libera o botão correspondente
 			}
 		}
 
@@ -215,7 +222,29 @@ public:
 			prev_gear = gear;
 		}
 	}
+/*
+	//=============== DRS SETTINGS ===============
 
+	void drawDRS(int32_t x, int32_t y){
+		while(drsAvailable == 0 && drsEnabled == 0){
+				tft.fillRect(SCREEN_WIDTH, 75, SCREEN_WIDTH, 405, TFT_GREEN);
+				tft.setTextColor(TFT_BLACK, TFT_GREEN);
+				tft.setTextSize(8);
+				tft.setTextDatum(MC_DATUM);
+				tft.setCursor(240, 120);
+				tft.print("DRS Zone");
+				delay(60);
+				
+				tft.fillScreen(TFT_BLACK);
+				tft.setTextColor(TFT_WHITE, TFT_BLACK);
+				tft.setTextSize(8);
+				tft.setTextDatum(MC_DATUM);
+				tft.setCursor(240, 120);
+				tft.print("DRS Zone");
+				delay(60);
+		}
+	}
+*/
 	boolean isDrawGearRpmRedRec()
 	{
 		if (rpmPercent >= rpmRedLineSetting)
@@ -313,8 +342,5 @@ public:
 		}
 
 	}
-
 };
-
-
 #endif

@@ -1,20 +1,20 @@
-fastled/FastLED@3.6
-https://github.com/paulo-raca/ArduinoBufferedStreams.git#5e3a1a3d140955384a07878c64808e77fa2a7521
-https://github.com/khoih-prog/ESPAsync_WiFiManager
-noah1510/LedController @ ^1.7.0
-adafruit/Adafruit SSD1306@2.5.9
-bodmer/TFT_eSPI@^2.5.43
-adafruit/Adafruit WS2801 Library@1.1.1
 https://github.com/9khil/LedControl#913cbcebb8ceea6783bb271d385d18b99c2d5e79
-adafruit/Adafruit PCD8544 Nokia 5110 LCD library@^2.0.1
-bitbank2/PNGdec@^1.0.2
+bodmer/TFT_eSPI@^2.5.43
 marcoschwartz/LiquidCrystal_I2C@1.1.2
-adafruit/Adafruit GFX Library@^1.11.5
-lovyan03/LovyanGFX@^1.1.16
-locoduino/RingBuffer@^1.0.4
-makuna/NeoPixelBus
-adafruit/Adafruit LED Backpack Library@^1.1
-https://github.com/maxint-rd/TM16xx#95a1bdd959bf6fce75d0059f129386155f49f984
-smougenot/TM1637@0.0.0-alpha+sha.9486982048
 lemmingdev/ESP32-BLE-Gamepad@^0.5.5
+adafruit/Adafruit WS2801 Library@1.1.1
+https://github.com/paulo-raca/ArduinoBufferedStreams.git#5e3a1a3d140955384a07878c64808e77fa2a7521
+noah1510/LedController @ ^1.7.0
+locoduino/RingBuffer@^1.0.4
+bitbank2/PNGdec@^1.0.2
 adafruit/Adafruit NeoPixel@^1.10.5
+adafruit/Adafruit LED Backpack Library@^1.1
+adafruit/Adafruit GFX Library@^1.11.5
+makuna/NeoPixelBus
+https://github.com/khoih-prog/ESPAsync_WiFiManager
+fastled/FastLED@3.6
+adafruit/Adafruit PCD8544 Nokia 5110 LCD library@^2.0.1
+smougenot/TM1637@0.0.0-alpha+sha.9486982048
+adafruit/Adafruit SSD1306@2.5.9
+lovyan03/LovyanGFX@^1.1.16
+https://github.com/maxint-rd/TM16xx#95a1bdd959bf6fce75d0059f129386155f49f984
